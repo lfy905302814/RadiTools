@@ -15,6 +15,7 @@ public class Test3{
 		//File file = new File("D:\\20180405.hst");
 		//File file = new File("D:\\20180408.hst");
 		//File file = new File("D:\\20180409.hst");
+		//分支更新二
 		File file = new File("D:\\20180410.hst");
 		FileInputStream in1 = null;
 		DataInputStream data_in = null;
