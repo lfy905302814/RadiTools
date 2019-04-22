@@ -69,7 +69,6 @@ public class AlgorithmTool {
 		 * PRE_BLANK+MS95 + （BEAT_DELAY_COUNTER - (WINDOW_WIDTH + FILTER_DELAY)）
 		 * 的长度。
 		 */
-		//System.out.println("aaa======================================================"+rr);
 		if ((rr / 2 + DIF) > (BEAT_ORG_LENGTH_MAX))
 			return true;
 
@@ -112,7 +111,7 @@ public class AlgorithmTool {
 		//System.out.println("iWritePoint="+iWritePoint);
 		if (sWp < 0)
 			sWp += WAVE_LEN;
-		for (int i = 0; i < len; i++) {
+		//for (int i = 0; i < len; i++) {
 			
 			sDat = iDat[sWp++].getValue();
 			sWp = (sWp >= WAVE_LEN) ? 0 : sWp;
@@ -126,8 +125,7 @@ public class AlgorithmTool {
 				que[j]++;
 			}
 			if (sDat == 100000){
-				rr = 0;
-				continue;
+				return 0;
 			}
 			/* Run the sample through the QRS detector */
 			qrsdelay = Qrsdet2.QRSDet(sDat, false, deviceid, index); /* finding R wave delay */
@@ -137,8 +135,7 @@ public class AlgorithmTool {
 			}
 			/* Return if no beat is ready for classification */
 			if (que[0] < BEAT_DELAY_COUNTER || pEcg.getBeat().getQueCount() == 0) {
-				rr = 0;
-				continue;
+				return 0;
 			}
 			/*
 			 * otherwise classify the beat at the head of the que /*calcute the
@@ -162,7 +159,7 @@ public class AlgorithmTool {
 				que[j] = que[j + 1];
 			}
 			pEcg.getBeat().setQueCount(queCountTemp);
-		}
+		//}
 		return rr;
 	}
 	
@@ -176,7 +173,7 @@ public class AlgorithmTool {
 	 * @param beatInfo
 	 * @return
 	 */
-	private static int BeatCharacteDetec(BeatInfo BeatInfoTemp, BeatInfo[] pBeatInfo, ArrhythmiaInfo pArrhy ,Ecg ecg, String deviceid, int index) {
+	private static int BeatCharacteDetec(BeatInfo BeatInfoTemp, BeatInfo[] pBeatInfo ,Ecg ecg, String deviceid, int index) {
 		int meanIndex = ecg.getMeanIndex();
 		if (meanIndex<BEAT_SUM){
 			pBeatInfo[meanIndex] = BeatInfoTemp;
@@ -219,16 +216,17 @@ public class AlgorithmTool {
 				System.out.println("qt hr   = "+pbit0.getQtinterval()*5);
 				/*心律失常分析*/
 				ARRH_TYPE rhythmClass = RhythmchkNew.RhythmChk_New(pBeatInfo, deviceid ,index);			// Check the rhythm.分析PVC
+				ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 				if(rhythmClass != ARRH_TYPE.NORMAL){
 					//TRACE("***************RhythmCh() return is %d***********  PVC  \n", rhythmClass); 
-					pArrhy.setArrhythmiaType(rhythmClass);
-					pArrhy.setnStartTime(pBeatInfo[BEAT_SUM-1].getT0());
-					pArrhy.setnEndTime(pBeatInfo[BEAT_SUM-1].getT0() + pBeatInfo[BEAT_SUM-1].getWidth()*5);
-					BeatInfoTemp.setArrhythmia(pArrhy);
+					pArrhythmia.setArrhythmiaType(rhythmClass);
+					pArrhythmia.setnStartTime(pBeatInfo[BEAT_SUM-1].getT0());
+					pArrhythmia.setnEndTime(pBeatInfo[BEAT_SUM-1].getT0() + pBeatInfo[BEAT_SUM-1].getWidth()*5);
+					BeatInfoTemp.setArrhythmia(pArrhythmia);
 					return 1;
 				}else{
-					pArrhy.setArrhythmiaType(ARRH_TYPE.NORMAL);
-					BeatInfoTemp.setArrhythmia(pArrhy);
+					pArrhythmia.setArrhythmiaType(ARRH_TYPE.NORMAL);
+					BeatInfoTemp.setArrhythmia(pArrhythmia);
 				}
 			}
 		}
@@ -247,7 +245,7 @@ public class AlgorithmTool {
 		sWp = orignalSignal.getiWritePoint() - len;
 		if (sWp < 0)
 			sWp += WAVE_LEN;
-		for (int i = 0; i < len; i++) {
+		//for (int i = 0; i < len; i++) {
 			/* 读取时间 */
 			timeTemp = (orignalSignal.getiDat())[sWp].getTime();
 			/* 读取波形 */
@@ -279,7 +277,7 @@ public class AlgorithmTool {
 				iWritePoint2 = 0;
 			}
 			heartRateSignal.setiWritePoint(iWritePoint2);
-		}
+		//}
 	}
 
 	/**
@@ -287,30 +285,29 @@ public class AlgorithmTool {
 	 */
 	private static void ecgSampleLoading(Wave orignalSignal, InputWave pEcg) {
 		/* iWritePoint是波形数据缓冲区的写指针，指向下个数据要写的位置 */
-		int len = pEcg.getLen();
-		int[] dat = pEcg.getDat();
+		//int len = pEcg.getLen();
+		int dat = pEcg.getDat();
 		long t0 = pEcg.getT0();
 		// iDat[WAVE_LEN]; iWritePoint
 		/* iWritePoint是波形数据缓冲区的写指针，指向下个数据要写的位置 */
-		for (int i = 0; i < len; i++) {
+		//for (int i = 0; i < len; i++) {
 			Dat[] iDat = orignalSignal.getiDat();
 			int iWritePoint = orignalSignal.getiWritePoint();
 			/* dat[i] int dat[MS2000]; 心电数据缓冲区 */
-			iDat[iWritePoint].setValue(dat[i]);
+			iDat[iWritePoint].setValue(dat);
 			/* time0+5*i; 计算数据时间 */
 			iDat[iWritePoint++].setTime(t0);
 			if (iWritePoint >= WAVE_LEN) {
 				iWritePoint = 0;
 			}
 			orignalSignal.setiWritePoint(iWritePoint);
-			t0 += 5;
-		}
+		//}
 	}
 
 	/**
 	 *@param pEcgSample：单点数据
 	 *@param deviceid：设备编号
-	 *@param index：导联号I(1),II(2),III(3),avR(4),avL(5),avF(6),V(7)
+	 *@param index：导联号I(0),II(1),III(2),avR(3),avL(4),avF(5),V(6)
 	 *@return BeatInfo
 	 */
 	public static BeatInfo beatAnalysis(InputWave pEcgSample, String deviceid, int index) {
@@ -322,49 +319,29 @@ public class AlgorithmTool {
 		if(bandPassSignal == null) bandPassSignal = new Wave();
 		Wave heartRateSignal = cacheMap.getObject(prefix + "heartRateSignal", Wave.class);
 		if(heartRateSignal == null) heartRateSignal = new Wave();
-		ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 		BeatInfo[] beatInfo = cacheMap.getObject(prefix + "beatInfo", BeatInfo[].class);
 		if(beatInfo == null){
 			beatInfo = new BeatInfo[BEAT_SUM];
-			for (int i = 0; i < BEAT_SUM; i++) {
-				beatInfo[i] = new BeatInfo();
-			}
 		}
 		Ecg pEcg = cacheMap.getObject(prefix + "pEcg", Ecg.class);
 		if(pEcg == null) pEcg = new Ecg();
 		int nobeatcounter = cacheMap.getInteger(prefix + "nobeatcounter");
-		/*String prefix = JedisUtils.getPrefix(deviceid, index, "beatAnalysis");
-		Wave orignalSignal =  JedisUtils.getObject(prefix, "orignalSignal", Wave.class);
-		if(orignalSignal == null) orignalSignal = new Wave();
-		Wave bandPassSignal = JedisUtils.getObject(prefix, "bandPassSignal", Wave.class);
-		if(bandPassSignal == null) bandPassSignal = new Wave();
-		Wave heartRateSignal =  JedisUtils.getObject(prefix, "heartRateSignal", Wave.class);
-		if(heartRateSignal == null) heartRateSignal = new Wave();
-		ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
-		BeatInfo[] beatInfo =  JedisUtils.getObject(prefix, "beatInfo", BeatInfo[].class);
-		if(beatInfo == null){
-			beatInfo = new BeatInfo[BEAT_SUM];
-			for (int i = 0; i < BEAT_SUM; i++) {
-				beatInfo[i] = new BeatInfo();
-			}
-		}
-		Ecg pEcg = JedisUtils.getObject(prefix, "pEcg", Ecg.class);
-		if(pEcg == null) pEcg = new Ecg();*/
 		int[] pSout = new int[7];
 		int rr=0;
 		int len = pEcgSample.getLen();
 		ecgSampleLoading(orignalSignal,pEcgSample);
 		ecgSampleFiltering(orignalSignal, bandPassSignal, heartRateSignal, len, pSout, deviceid, index);
 		rr = beatDetection(heartRateSignal, len, pEcg, deviceid, index);
-		BeatInfo BeatInfoNow = new BeatInfo();
+		BeatInfo BeatInfoNow = null;
 		if (rr!=0){	/*new Beat*/
 			//phr = 12000/(rr);/*计算实时心率*/
 			nobeatcounter = 0;
 			/*beat 分析*/
 			Tempbeat tempBeat = new Tempbeat();
 			if(!StoreBeatCharacte_roughly(tempBeat, bandPassSignal, rr)){
+				BeatInfoNow = new BeatInfo();
 				Analbeat.AnalyzeBeatNew(tempBeat, BeatInfoNow);
-				BeatCharacteDetec(BeatInfoNow, beatInfo, pArrhythmia, pEcg, deviceid, index);
+				BeatCharacteDetec(BeatInfoNow, beatInfo, pEcg, deviceid, index);
 				//phr = beatInfo[1].getMeanHeartRate();
 			}
 		}else{
@@ -374,6 +351,8 @@ public class AlgorithmTool {
 				if (nobeatcounter >= 200*10){
 					/*心动停止*/
 					nobeatcounter=0;
+					BeatInfoNow = new BeatInfo();
+					ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 					pArrhythmia.setArrhythmiaType(ARRH_TYPE.CARDIAC_ARREST);
 					BeatInfoNow.setArrhythmia(pArrhythmia);
 					System.out.println("********心动停止**********\n");
@@ -391,9 +370,9 @@ public class AlgorithmTool {
 	
 	/**
 	 * @param json:算法输入json数据
-	 * @return BeatInfo[][]
+	 * @return BeatInfo[]
 	 */
-	public static BeatInfo[][] handleWave(String json){
+	public static BeatInfo[] handleWave(String json){
 		Parameters params = JSON.parseObject(json, Parameters.class);
 		List<Ecgwave> list = params.getEcgwave();
 		String deviceid = params.getDeviceid();
@@ -401,26 +380,30 @@ public class AlgorithmTool {
 		String prefix = cacheMap.getPrefix(deviceid, 0, "handleWave");
 		long time = cacheMap.getLong(prefix + "time");
 		if(time == 0) time=System.currentTimeMillis();
-		int[][] data = new int[CHN_SUM_NEW][1];
 		int[] temp = new int[CHN_SUM_NEW];
-		BeatInfo[][] beatInfo = new BeatInfo[list.size()][CHN_SUM_NEW];
+		BeatInfo[] beatInfo = null;
 		for (int i = 0; i < list.size(); i++) {
-			int ecg1 = list.get(i).getEcg1();
-			int ecg2 = list.get(i).getEcg2();
+			int ecg1 = list.get(i).getEcg1()*4;
+			int ecg2 = list.get(i).getEcg2()*4;
 			temp[0] = ecg1;
 			temp[1] = ecg2;
 			temp[2] = ecg2-ecg1;
 			temp[3] = (ecg1+ecg2)/2;
 			temp[4] = ecg1-ecg2/2;
 			temp[5] = ecg2-ecg1/2;
-			temp[6] = list.get(i).getEcgv();
+			temp[6] = list.get(i).getEcgv()*4;
 			for (int j = 0; j < CHN_SUM_NEW; j++) {
-				data[j][0] = temp[j];
 				InputWave pEcgSample = new InputWave();
 				pEcgSample.setT0(time);
-				pEcgSample.setDat(data[j]);
+				pEcgSample.setDat(temp[j]);
 				pEcgSample.setLen(1);
-				beatInfo[i][j] = beatAnalysis(pEcgSample, deviceid, j+1);
+				BeatInfo beatInfoTemp = beatAnalysis(pEcgSample, deviceid, j);
+				if(beatInfoTemp != null){
+					if(beatInfo == null){
+						beatInfo = new BeatInfo[CHN_SUM_NEW];
+					}
+					beatInfo[j] = beatInfoTemp;
+				}
 			}
 			time += 5;
 		}

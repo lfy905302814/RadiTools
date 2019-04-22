@@ -1,7 +1,5 @@
 package com.radi.tools;
 
-import java.util.Arrays;
-
 public class Qrsdet2 {
 
 	private final static int MIN_PEAK_AMP = 7;
@@ -51,7 +49,6 @@ public class Qrsdet2 {
 		 * Wait until normal detector is ready before calling early detections.
 		 */
 		aPeak = Peak(fdatum, deviceid ,index);// 返回0时无峰值出现
-		//System.out.println("aPeak="+aPeak+", "+fdatum);
 		if (aPeak < MIN_PEAK_AMP)
 			aPeak = 0;
 		// Hold any peak that is detected for 200 ms
@@ -280,10 +277,12 @@ public class Qrsdet2 {
 	private static int mean(int[] array, int datnum) {
 		int sum;
 		int i;
-		Arrays.sort(array);
-		for (i = 1, sum = 0; i < datnum-2; ++i)
+		//Arrays.sort(array);
+		//for (i = 1, sum = 0; i < datnum-1; ++i)
+		for (i = 0, sum = 0; i < datnum; ++i)
 			sum += array[i];
-		sum /= datnum-2;
+		//sum /= datnum-2;
+		sum /= datnum;
 		return sum;
 	}
 	

@@ -24,7 +24,7 @@ public class RhythmchkNew {
 			if (pBeatInfo[i].getRealHeartRate()<20){
 				continue;
 			}
-			rr_buf[i] = rr_temp =12000/pBeatInfo[i].getRealHeartRate();
+			rr_buf[i] = rr_temp = pBeatInfo[i].getRealHeartRate();
 			if (max_rr < rr_temp){
 				max_rr = rr_temp;
 			}

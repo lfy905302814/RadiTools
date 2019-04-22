@@ -14,9 +14,8 @@ public class Test3{
 	public static void main(String[] args) {
 		//File file = new File("D:\\20180405.hst");
 		//File file = new File("D:\\20180408.hst");
-		//File file = new File("D:\\20180409.hst");
-		//====AAA
-		File file = new File("D:\\20180410.hst");
+		File file = new File("D:\\20180409.hst");
+		//File file = new File("D:\\20180410.hst");
 		FileInputStream in1 = null;
 		DataInputStream data_in = null;
 		try {
@@ -26,28 +25,19 @@ public class Test3{
 			int num = 200*60;
 			int k = 6;
 			byte[] itemBuf = new byte[num*k+4];
-			int[] data = new int[num];
 			long time = System.currentTimeMillis();
 			while(true){
 				data_in.read(itemBuf, 0, len);
 				for (int i = 0; i < num; i++) {
 					Integer ecg2 = Integer.parseInt(String.format("%02x",itemBuf[i*6+5])+String.format("%02x",itemBuf[i*6+4]),16);
-					data[i] = ecg2;
-				}
-				int datLen = 1;
-				int[] temp = new int[datLen];
-				int tempIndex = 0;
-				for (int i = 0; i < data.length; i++) {
-					temp[tempIndex++] = data[i];
-					if(tempIndex % datLen == 0 || i == data.length-1){
-						InputWave pEcgSample = new InputWave();
-						pEcgSample.setT0(time);
-						pEcgSample.setDat(temp);
-						pEcgSample.setLen(tempIndex);
-						AlgorithmTool.beatAnalysis(pEcgSample, "005", 1);
-						tempIndex = 0;
-						time += 5;
-					}
+					InputWave pEcgSample = new InputWave();
+					pEcgSample.setT0(time);
+					pEcgSample.setDat(ecg2);
+					pEcgSample.setLen(1);
+					AlgorithmTool.beatAnalysis(pEcgSample, "005", 1);
+					/*BeatInfo beatInfo = AlgorithmTool.beatAnalysis(pEcgSample, "005", 1);
+					System.out.println("======================================="+beatInfo);*/
+					time += 5;
 				}
 			}
 		} catch (FileNotFoundException e) {

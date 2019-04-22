@@ -4,13 +4,13 @@ public class BeatInfo {
 	
 	private long t0;
 	/**在BP滤波器输出缓冲区的位置*/
-	private int i_start;		
+	private int i_start;
 	/**相对i_start的位置*/
-	private int i_end;		
+	private int i_end;
 	private int width;
-	private WaveInfo p = new WaveInfo();
-	private WaveInfo qrs = new WaveInfo();
-	private WaveInfo t = new WaveInfo();
+	private WaveInfo p;
+	private WaveInfo qrs;
+	private WaveInfo t;
 	
 	/**J点位置*/
 	private int i_J;		
@@ -24,13 +24,13 @@ public class BeatInfo {
 	private int qtinterval;			
 	/**st诊断值 >0表示抬高多少，<0表示降低多少
 	stlevel = st_point - isolevel.  单位：(mv)*/
-	private int stlevel;			
-	private int[] wave = new int[500];
+	private int stlevel;
+	private int[] wave;
 	/**实时心率*/
 	private int RealHeartRate;  
 	/**平均心率，6点平均心率*/
 	private int MeanHeartRate;
-	/**心律失常信息*/   
+	/**心律失常信息*/
 	private ArrhythmiaInfo  arrhythmia;
 	
 	public long getT0() {

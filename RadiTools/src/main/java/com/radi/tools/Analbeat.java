@@ -178,7 +178,9 @@ public class Analbeat {
 		int i_end = pBeatInfo.getI_end();
 		// 保存beat波形数据
 		for (int i = i_start, j = 0; i < i_end; i++, j++) {
-			(pBeatInfo.getWave())[j] = dat[i].getValue();
+			int[] wave = new int[AlgorithmTool.BEAT_ORG_LENGTH_MAX];
+			wave[j] = dat[i].getValue();
+			pBeatInfo.setWave(wave);
 		}
 		pBeatInfo.setWidth(i_end - i_start);
 

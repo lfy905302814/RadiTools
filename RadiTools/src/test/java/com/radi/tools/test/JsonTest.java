@@ -23,6 +23,8 @@ public class JsonTest{
 						String str = bufferedReader.readLine();
 						if(str!=null){
 							AlgorithmTool.handleWave(str);
+							/*BeatInfo[] beatInfo = AlgorithmTool.handleWave(str);
+							System.out.println("======================================="+beatInfo);*/
 						}else{
 							break;
 						}
@@ -47,7 +49,7 @@ public class JsonTest{
 
 	public static void main(String[] args) {
 		//JedisUtils.flushDB();
-		reader("D:\\jsonnew.txt");
+		reader("D:\\json2.txt");
 	}
 
 }
