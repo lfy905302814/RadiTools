@@ -4,6 +4,10 @@ public enum CHANNEL {
 	
 	I,
 	II,
+	III,
+	avR,
+	avL,
+	avF,
 	Vx;
 	
 }
