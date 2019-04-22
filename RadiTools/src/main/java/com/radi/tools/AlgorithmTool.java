@@ -22,8 +22,7 @@ public class AlgorithmTool {
 	public final static int MS2000 = 400;
 	public final static int MS2400 = 480;
 	public final static int WAVE_LEN = MS2400 * 6;
-	public final static int CHN_SUM = CHANNEL.Vx.ordinal() + 1;
-	public final static int CHN_SUM_NEW = 7;
+	public final static int CHN_SUM_NEW = CHANNEL.Vx.ordinal() + 1;
 	public final static int BEAT_QUE_LENGTH = 10;
 	public final static int BEAT_SAMPLE_RATE = 100;
 	public final static double BEAT_MS_PER_SAMPLE = 1000.00 / BEAT_SAMPLE_RATE;
@@ -98,7 +97,7 @@ public class AlgorithmTool {
 	/**
 	 * @param len:输入InputWave对象有效数据长度len
 	 * @param pEcg
-	 * @param index:波形序列CHANNEL(I(0),II(1),Vx(2));
+	 * @param index:波形序列CHANNEL(I(0),II(1));
 	 * @return
 	 */
 	private static int beatDetection(Wave heartRateSignal, int len,Ecg pEcg, String deviceid, int index) {
@@ -234,7 +233,7 @@ public class AlgorithmTool {
 	}
 
 	/**
-	 * @param index:波形序列CHANNEL(I(0),II(1),Vx(2));
+	 * @param index:波形序列CHANNEL(I(0),II(1));
 	 * @param len:输入InputWave对象有效数据长度len
 	 * @param pSout
 	 */

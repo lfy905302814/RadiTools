@@ -49,7 +49,7 @@ public class JsonTest{
 
 	public static void main(String[] args) {
 		//JedisUtils.flushDB();
-		reader("D:\\json2.txt");
+		reader("D:\\jsonnew.txt");
 	}
 
 }
