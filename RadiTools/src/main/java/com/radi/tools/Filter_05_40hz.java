@@ -11,7 +11,7 @@ public class Filter_05_40hz {
 			{ 1, 0, -1 }, { 1, 0, 0 } };
 	private final static int IIR_NSEC = MWSPT_NSEC;
 
-	public static int iir_filter_05_40hz_bp_I(int in) {
+	static int iir_filter_05_40hz_bp_I(int in) {
 		int i;
 		float[][] y = new float[IIR_NSEC][3];
 		float[][] x = new float[IIR_NSEC + 1][3];

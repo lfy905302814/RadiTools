@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import com.radi.tools.AlgorithmTool;
 
 public class JsonTest{
-	
 	public static void reader(String filePath) {
 		BufferedReader bufferedReader = null;
 		try {
@@ -24,7 +23,8 @@ public class JsonTest{
 						if(str!=null){
 							AlgorithmTool.handleWave(str);
 							/*BeatInfo[] beatInfo = AlgorithmTool.handleWave(str);
-							System.out.println("======================================="+beatInfo);*/
+							if(beatInfo!=null){
+							}*/
 						}else{
 							break;
 						}

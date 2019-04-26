@@ -5,7 +5,7 @@ public class Qrsdet2 {
 	private final static int MIN_PEAK_AMP = 7;
 	private final static double TH = 0.625;
 
-	public static int QRSDet(int datum, boolean init, String deviceid, int index) {
+	static int QRSDet(int datum, boolean init, String deviceid, int index) {
 		CacheMap cacheMap = CacheMap.getCacheMap();
 		String prefix = cacheMap.getPrefix(deviceid, index, "QRSDet");
 		int det_thresh = cacheMap.getInteger(prefix + "det_thresh");
@@ -19,12 +19,10 @@ public class Qrsdet2 {
 		int sbloc = cacheMap.getInteger(prefix + "sbloc");
 		int sbcount = cacheMap.getInteger(prefix + "sbcount");
 		if(sbcount == 0) sbcount = Qrsfilt.MS1500;
-		int maxder = cacheMap.getInteger(prefix + "maxder");
 		int initBlank = cacheMap.getInteger(prefix + "initBlank");
 		int initMax = cacheMap.getInteger(prefix + "initMax");
 		int preBlankCnt = cacheMap.getInteger(prefix + "preBlankCnt");
 		int tempPeak = cacheMap.getInteger(prefix + "tempPeak");
-		int DDPtr = cacheMap.getInteger(prefix + "DDPtr");
 		int[] qrsbuf = cacheMap.getObject(prefix + "qrsbuf", int[].class);
 		if(qrsbuf==null) qrsbuf = new int[8];
 		int[] noise = cacheMap.getObject(prefix + "noise", int[].class);
@@ -38,8 +36,6 @@ public class Qrsdet2 {
 		}
 		int[] rsetBuff = cacheMap.getObject(prefix + "rsetBuff", int[].class);
 		if(rsetBuff==null) rsetBuff = new int[8];
-		int[] DDBuffer = cacheMap.getObject(prefix + "DDBuffer", int[].class);
-		if(DDBuffer==null) DDBuffer = new int[Qrsfilt.DER_DELAY];
 		
 		int fdatum, QrsDelay = 0;
 		int i, newPeak, aPeak;
@@ -87,9 +83,9 @@ public class Qrsdet2 {
 		 */
 		// 保存第n和第n-2点之间的差值
 		// DDBuffer[DDPtr] = Xn - Xn-2;
-		DDBuffer[DDPtr] = Qrsfilt.deriv1(datum,deviceid, index);
+		/*DDBuffer[DDPtr] = Qrsfilt.deriv1(datum,deviceid, index);
 		if (++DDPtr == Qrsfilt.DER_DELAY)
-			DDPtr = 0;
+			DDPtr = 0;*/
 		/* Initialize the qrs peak buffer with the first eight */
 		/* local maximum peaks detected. */
 		if (qpkcnt < 8) {
@@ -125,7 +121,7 @@ public class Qrsdet2 {
 				 * peak if it doesn't seem to be a base line shift.
 				 */
 				// 查看基线漂移，无基线漂移时，峰值有效
-				if (!BLSCheck(DDBuffer, DDPtr, maxder)) {
+				//if (!BLSCheck(DDBuffer, DDPtr, maxder)) {
 					// 无基线漂移
 					// Classify（分类） the beat as a QRS complex（QRS波群）
 					// if the peak is larger than the detection threshold.
@@ -144,8 +140,6 @@ public class Qrsdet2 {
 						count = Qrsfilt.WINDOW_WIDTH; // 复位计数器
 
 						sbpeak = 0;
-
-						maxder = 0;
 						QrsDelay = Qrsfilt.WINDOW_WIDTH + Qrsfilt.FILTER_DELAY;
 						initBlank = initMax = rsetCount = 0;
 						System.out.println("@@@@@@@@@@@@@get a real new peak"+newPeak);
@@ -162,7 +156,7 @@ public class Qrsdet2 {
 						}
 					}
 				}
-			}
+			//}
 
 			/* Test for search back condition. If a QRS is found in */
 			/* search back update the QRS buffer and det_thresh. */
@@ -184,7 +178,6 @@ public class Qrsdet2 {
 				QrsDelay += Qrsfilt.FILTER_DELAY;
 
 				sbpeak = 0;
-				maxder = 0;
 				// LocationThePoint(PRE_BLANK+MS95, 0, RGB(255,0,0),sbpeak,
 				// det_thresh, 0x7FFFFFFF,0x7FFFFFFF);
 				initBlank = initMax = rsetCount = 0;
@@ -231,17 +224,14 @@ public class Qrsdet2 {
 		cacheMap.set(prefix + "sbpeak", sbpeak);
 		cacheMap.set(prefix + "sbloc", sbloc);
 		cacheMap.set(prefix + "sbcount", sbcount);
-		cacheMap.set(prefix + "maxder", maxder);
 		cacheMap.set(prefix + "initBlank", initBlank);
 		cacheMap.set(prefix + "initMax", initMax);
 		cacheMap.set(prefix + "preBlankCnt", preBlankCnt);
 		cacheMap.set(prefix + "tempPeak", tempPeak);
-		cacheMap.set(prefix + "DDPtr", DDPtr);
 		cacheMap.set(prefix + "qrsbuf", qrsbuf);
 		cacheMap.set(prefix + "noise", noise);
 		cacheMap.set(prefix + "rrbuf", rrbuf);
 		cacheMap.set(prefix + "rsetBuff", rsetBuff);
-		cacheMap.set(prefix + "DDBuffer", DDBuffer);
 		return (QrsDelay);
 	}
 
@@ -275,15 +265,13 @@ public class Qrsdet2 {
 	}
 
 	private static int mean(int[] array, int datnum) {
-		int sum;
+		long sum;
 		int i;
-		//Arrays.sort(array);
-		//for (i = 1, sum = 0; i < datnum-1; ++i)
-		for (i = 0, sum = 0; i < datnum; ++i)
+		for (i = 0, sum = 0; i < datnum; ++i){
 			sum += array[i];
-		//sum /= datnum-2;
+		}
 		sum /= datnum;
-		return sum;
+		return (int) sum;
 	}
 	
 	/****************************************************************************
@@ -310,7 +298,7 @@ public class Qrsdet2 {
 	 * roughly（粗略地） the same magnitude（量级） in a 220 ms window.
 	 ***********************************************************************/
 
-	private static boolean BLSCheck(int[] dBuf, int dbPtr, int maxder) {
+	/*private static boolean BLSCheck(int[] dBuf, int dbPtr, int maxder) {
 		int max, min, maxt = 0, mint = 0, t, x;
 		max = min = 0;
 		// 搜索220ms内的极值
@@ -330,10 +318,9 @@ public class Qrsdet2 {
 		maxder = max;
 		min = -min;
 
-		/*
-		 * Possible beat if a maximum and minimum pair are found where the
-		 * interval between them is less than 150 ms.
-		 */
+		 //Possible beat if a maximum and minimum pair are found where the
+		 //interval between them is less than 150 ms.
+		 
 
 		if ((max > (min >> 3)) && (min > (max >> 3)) && (Math.abs(maxt - mint) < Qrsfilt.MS150))
 			return false;
@@ -341,6 +328,6 @@ public class Qrsdet2 {
 		else
 			// SetFlagLine(0,PRE_BLANK+MS95,4,RGB(255,255,255));
 			return false;
-	}
+	}*/
 
 }

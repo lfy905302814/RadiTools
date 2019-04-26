@@ -4,9 +4,9 @@ public class InputWave {
 	
 	/**dat[0]的实时时间(unix时间)，单位ms*/
 	private long t0;
-	/*心电数据缓冲区	
+	/*心电数据缓冲区
 	private int[] dat = new int[AlgorithmTool.WAVE_LEN];*/
-	/**心电数据*/	
+	/**心电数据*/
 	private int dat;
 	/**有效数据长度*/
 	private int len;

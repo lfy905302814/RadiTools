@@ -14,8 +14,8 @@ public class Test3{
 	public static void main(String[] args) {
 		//File file = new File("D:\\20180405.hst");
 		//File file = new File("D:\\20180408.hst");
-		File file = new File("D:\\20180409.hst");
-		//File file = new File("D:\\20180410.hst");
+		//File file = new File("D:\\20180409.hst");
+		File file = new File("D:\\20180410.hst");
 		FileInputStream in1 = null;
 		DataInputStream data_in = null;
 		try {
@@ -28,6 +28,8 @@ public class Test3{
 			long time = System.currentTimeMillis();
 			while(true){
 				data_in.read(itemBuf, 0, len);
+				System.out.println(String.format("%02x",itemBuf[len-2]));
+				System.out.println(String.format("%02x",itemBuf[len-1]));
 				for (int i = 0; i < num; i++) {
 					Integer ecg2 = Integer.parseInt(String.format("%02x",itemBuf[i*6+5])+String.format("%02x",itemBuf[i*6+4]),16);
 					InputWave pEcgSample = new InputWave();
@@ -36,7 +38,9 @@ public class Test3{
 					pEcgSample.setLen(1);
 					AlgorithmTool.beatAnalysis(pEcgSample, "005", 1);
 					/*BeatInfo beatInfo = AlgorithmTool.beatAnalysis(pEcgSample, "005", 1);
-					System.out.println("======================================="+beatInfo);*/
+					if(beatInfo!=null && beatInfo.getArrhythmia()!=null && beatInfo.getArrhythmia().getArrhythmiaType()!=ARRH_TYPE.NORMAL){
+						System.out.println("======================================="+beatInfo.getStlevel());
+					}*/
 					time += 5;
 				}
 			}

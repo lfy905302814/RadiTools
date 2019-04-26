@@ -1,5 +1,7 @@
 package com.radi.tools;
 
+import java.util.Arrays;
+
 import com.radi.entity.BeatInfo;
 import com.radi.entity.Dat;
 import com.radi.entity.Tempbeat;
@@ -15,7 +17,7 @@ public class Analbeat {
 	 * 记录的是波形数据的起始位置，即pbeat->nOrignal[0]在BP滤波器输出信号中的位置信息。
 	 * 而pBeatInfo中的所有位置信息都是相对于pbeat->nOrignal[0]的位置，也就是pbeat->nOrignal[] 数组的下标
 	 */
-	public static void AnalyzeBeatNew(Tempbeat pbeat, BeatInfo pBeatInfo) {
+	static void AnalyzeBeatNew(Tempbeat pbeat, BeatInfo pBeatInfo) {
 		// 先获得数据起始时间
 		Dat[] dat = pbeat.getiDat();
 		pBeatInfo.setT0(dat[0].getTime());
@@ -44,6 +46,7 @@ public class Analbeat {
 		// 获得qrs波起始位置
 
 		// 先获得q点
+		nPeakIndex = pbeat.getnPeakIndex();
 		s_i = nPeakIndex - 15;
 		if (s_i < 0)
 			s_i = 0;
@@ -56,9 +59,8 @@ public class Analbeat {
 		e_i = q_i - Qrsfilt.MS80;
 		if (e_i < ISO_LENGTH1)
 			e_i = ISO_LENGTH1;
-		boolean IsoCheckNewValue = IsoCheckNew(dat, ISO_LENGTH1);
 		for (int i = s_i; i > e_i; i--) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i-ISO_LENGTH1, dat.length), ISO_LENGTH1)) {
 				// 找到qrs起始波位置
 				qrs.setI_start(i - ISO_LENGTH1 / 2);
 				break;
@@ -84,7 +86,7 @@ public class Analbeat {
 		if (e_i >= length - ISO_LENGTH1)
 			e_i = length - ISO_LENGTH1;
 		for (int i = s_i; i < e_i; i++) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i, dat.length), ISO_LENGTH1)) {
 				// 找到qrs结束位置，即J点
 				qrs.setI_end(i);
 				break;
@@ -100,7 +102,10 @@ public class Analbeat {
 		// 获得p波
 		// 先查找p波波峰
 		int p_am = 0, p_i = 0;
-		s_i = 0;
+		s_i = qrs.getI_start()-Qrsfilt.MS200;
+		if (s_i<0){
+			s_i=0;
+		}
 		e_i = qrs.getI_start();
 		int[] temp4 = GetPeak(pbeat, s_i, e_i, true);
 		p_am = temp4[0];
@@ -115,7 +120,7 @@ public class Analbeat {
 			e_i = ISO_LENGTH1;
 
 		for (int i = s_i; i > e_i; i--) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i-ISO_LENGTH1, dat.length), ISO_LENGTH1)) {
 				// 找到p起始波位置
 				p.setI_start(i - ISO_LENGTH1 / 2);
 				break;
@@ -124,12 +129,13 @@ public class Analbeat {
 			}
 		}
 		// 保存beat起始位置
+		if(p.getI_start()<0) p.setI_start(0);
 		pBeatInfo.setI_start(p.getI_start());
 		// 查找p波结束位置
 		s_i = p_i;
 		e_i = qrs.getI_start();
 		for (int i = s_i; i < e_i; i++) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i, dat.length), ISO_LENGTH1)) {
 				// 找到p结束位置
 				p.setI_end(i);
 				break;
@@ -142,13 +148,15 @@ public class Analbeat {
 		e_i = length;
 		WaveInfo t = new WaveInfo();
 		pBeatInfo.setT(t);
-		GetTPeak(pbeat, s_i, e_i, t.getAm_peak(), t.getI_peak());
-
+		int[] temp5 = GetTPeak(pbeat, s_i, e_i);
+		t.setAm_peak(temp5[0]);
+		t.setI_peak(temp5[1]);
+		
 		// 查找T波起始
 		s_i = qrs.getI_end() + Qrsfilt.MS80;
 		e_i = t.getI_peak();
 		for (int i = s_i; i < e_i; i++) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i, dat.length), ISO_LENGTH1)) {
 				// 找到t起始，即J点
 				t.setI_start(i);
 				break;
@@ -160,7 +168,7 @@ public class Analbeat {
 		s_i = t.getI_peak();
 		e_i = length;
 		for (int i = s_i; i < e_i; i++) {
-			if (IsoCheckNewValue) {
+			if (IsoCheckNew(Arrays.copyOfRange(dat, i, dat.length), ISO_LENGTH1)) {
 				// 找到t结束位置
 				t.setI_end(i);
 				break;
@@ -171,7 +179,7 @@ public class Analbeat {
 		// beat end
 		pBeatInfo.setI_end(t.getI_end());
 		// QT间期
-		pBeatInfo.setQtinterval(t.getI_end() - t.getI_start());
+		pBeatInfo.setQtinterval(t.getI_end() - qrs.getI_start());
 		// st
 		pBeatInfo.setStlevel(pBeatInfo.getSt_point() - pBeatInfo.getIsolevel());
 		int i_start = pBeatInfo.getI_start();
@@ -204,7 +212,7 @@ public class Analbeat {
 		pBeatInfo.setSt_point(pBeatInfo.getSt_point() - i_start);
 		pBeatInfo.setI_J(pBeatInfo.getI_J() - i_start);
 		
-		pBeatInfo.setI_start(0);
+		//pBeatInfo.setI_start(0);
 	}
 
 	private static int[] GetPeak(Tempbeat pdata, int start, int end, boolean flag) {
@@ -255,10 +263,10 @@ public class Analbeat {
 		return false;
 	}
 
-	private static void GetTPeak(Tempbeat pdata, int start, int end, int am, int i_am) {
+	private static int[] GetTPeak(Tempbeat pdata, int start, int end) {
+		int[] tempInt = new int[2];
 		int temp = 0;
 		int n = 0;
-
 		// 获得波峰
 		temp = -32768;
 		n = start;
@@ -268,8 +276,9 @@ public class Analbeat {
 				n = i;
 			}
 		}
-		am = (pdata.getiDat())[n].getValue();
-		i_am = n;
+		tempInt[0] = temp;
+		tempInt[1] = n;
+		return tempInt;
 	}
-
+	
 }

@@ -15,7 +15,7 @@ public class RhythmchkNew {
 	private final static int READY = 1;
 	private final static int BRADY_LIMIT = Qrsfilt.MS1500;
 	
-	public static ARRH_TYPE RhythmChk_New(BeatInfo[] pBeatInfo, String deviceid, int index){
+	static ARRH_TYPE RhythmChk_New(BeatInfo[] pBeatInfo, String deviceid, int index){
 		ARRH_TYPE classify= ARRH_TYPE.NORMAL;
 		int[] rr_buf = new int[AlgorithmTool.BEAT_SUM];
 		int max_rr=0,min_rr=500;
@@ -28,7 +28,7 @@ public class RhythmchkNew {
 			if (max_rr < rr_temp){
 				max_rr = rr_temp;
 			}
-			if (min_rr > rr_temp){
+			if (min_rr > rr_temp && rr_temp>0){
 				min_rr = rr_temp;
 			}
 		}

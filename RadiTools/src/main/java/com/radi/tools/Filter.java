@@ -15,7 +15,7 @@ public class Filter {
 	private final static double[] a = { 1.0, -3.5532126053259954, 5.136069365083911, -4.100147431481218, 2.069371532568915,
 			-0.6149101943256272, 0.06285391989554877 };
 
-	public static int iir_filter_005_80hz_bp_I(int in) {
+	static int iir_filter_005_80hz_bp_I(int in) {
 		int i;
 		float y[][] = new float[IIR_NSEC][3];
 		float x[][] = new float[IIR_NSEC + 1][3];
@@ -40,7 +40,7 @@ public class Filter {
 		return ((int) x[IIR_NSEC][0]);
 	}
 
-	public static int iir_filter_1_40hz_bp_DingZong(int pdata, int datalen) {
+	static int iir_filter_1_40hz_bp_DingZong(int pdata, int datalen) {
 		double[] prev_x = new double[IIR_BUF_LEN], prev_y = new double[IIR_BUF_LEN];
 		int Nback = IIR_BUF_LEN;
 		int outdat = 0;
@@ -77,7 +77,7 @@ public class Filter {
 	};
 	
 	/**微分*/
-	public static int Derivative(int data, String deviceid, int index){
+	static int Derivative(int data, String deviceid, int index){
 		int y,i;
 		CacheMap cacheMap = CacheMap.getCacheMap();
 		String prefix = cacheMap.getPrefix(deviceid, index, "Derivative");

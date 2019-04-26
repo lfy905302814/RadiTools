@@ -107,14 +107,12 @@ public class AlgorithmTool {
 		Dat[] iDat = heartRateSignal.getiDat();
 		int iWritePoint = heartRateSignal.getiWritePoint();
 		sWp = iWritePoint - len;
-		//System.out.println("iWritePoint="+iWritePoint);
 		if (sWp < 0)
 			sWp += WAVE_LEN;
 		//for (int i = 0; i < len; i++) {
 			
 			sDat = iDat[sWp++].getValue();
 			sWp = (sWp >= WAVE_LEN) ? 0 : sWp;
-			//System.out.println("QRSDet input ="+sDat);
 			/* increment RRInterval count */
 			int rRCount = pEcg.getrRCount() + 1;
 			pEcg.setrRCount(rRCount);
@@ -149,7 +147,7 @@ public class AlgorithmTool {
 			 * has little error
 			 */
 			rr = rRCount - que[0];
-			qrsdelay = rRCount = que[0];
+			rRCount = que[0];
 			pEcg.setrRCount(rRCount);
 			System.out.println("=====================HR = " + (12000/rr));
 			
@@ -217,7 +215,6 @@ public class AlgorithmTool {
 				ARRH_TYPE rhythmClass = RhythmchkNew.RhythmChk_New(pBeatInfo, deviceid ,index);			// Check the rhythm.分析PVC
 				ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 				if(rhythmClass != ARRH_TYPE.NORMAL){
-					//TRACE("***************RhythmCh() return is %d***********  PVC  \n", rhythmClass); 
 					pArrhythmia.setArrhythmiaType(rhythmClass);
 					pArrhythmia.setnStartTime(pBeatInfo[BEAT_SUM-1].getT0());
 					pArrhythmia.setnEndTime(pBeatInfo[BEAT_SUM-1].getT0() + pBeatInfo[BEAT_SUM-1].getWidth()*5);
@@ -250,7 +247,7 @@ public class AlgorithmTool {
 			/* 读取波形 */
 			sdat = (orignalSignal.getiDat())[sWp++].getValue();
 			sWp = (sWp >= WAVE_LEN) ? 0 : sWp;
-			sdat = Qrsfilt.FilterProcess(enumFilterType, sdat, pSout, deviceid, index);
+			Qrsfilt.FilterProcess(enumFilterType, sdat, pSout, deviceid, index);
 			pSout[DAT_TYPE.BPASS.ordinal()] *= 12;
 			
 			/* save the ecg sample afer bp filter */

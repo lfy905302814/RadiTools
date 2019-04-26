@@ -29,7 +29,7 @@ public class Qrsfilt {
 	public final static int FILTER_DELAY = (int) ((DERIV_LENGTH/2.00) + (LPBUFFER_LGTH/2.00 - 1) + ((HPBUFFER_LGTH-1)/2.00) + PRE_BLANK); 
 	public final static int DER_DELAY = WINDOW_WIDTH + FILTER_DELAY + MS100;
 
-	public static int FilterProcess(FILTER_TYPE filter_type, int datum, int[] pbuf, String deviceid, int index) {
+	static int FilterProcess(FILTER_TYPE filter_type, int datum, int[] pbuf, String deviceid, int index) {
 		int fdatum = 0;
 		int i = 0;
 		int temp;
@@ -93,7 +93,7 @@ public class Qrsfilt {
 		return y;
 	}
 
-	public static int deriv1(int x, String deviceid, int index) {
+	static int deriv1(int x, String deviceid, int index) {
 		CacheMap cacheMap = CacheMap.getCacheMap();
 		String prefix = cacheMap.getPrefix(deviceid, index, "deriv1");
 		int derI = cacheMap.getInteger(prefix + "derI");

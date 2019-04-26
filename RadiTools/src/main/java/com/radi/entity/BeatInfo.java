@@ -27,7 +27,7 @@ public class BeatInfo {
 	private int stlevel;
 	private int[] wave;
 	/**实时心率*/
-	private int RealHeartRate;  
+	private int RealHeartRate;
 	/**平均心率，6点平均心率*/
 	private int MeanHeartRate;
 	/**心律失常信息*/
