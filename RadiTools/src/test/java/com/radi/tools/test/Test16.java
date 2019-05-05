@@ -21,7 +21,18 @@ public class Test16 {
 		//可以在声明十进制时，自动完成十六进制到十进制的转换 
 		int valueHex = 0x00001322;
 		System.out.println("int valueHex = 0x00001322 --> " + valueHex);
-
+		
+		System.out.println(Integer.parseInt("07F8",16));
+		
+		System.out.println(Integer.parseInt("04B0",16));
+		System.out.println(Integer.parseInt("0585",16));
+		System.out.println(Integer.parseInt("5550",16));
+		
+		System.out.println(String.format("%08x",15360));
+		System.out.println(Integer.parseInt("3c00",16));
+		
+		System.out.println(String.format("%08x",182));
+		
 	}
 
 }

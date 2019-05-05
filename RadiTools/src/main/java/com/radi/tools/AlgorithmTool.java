@@ -213,16 +213,13 @@ public class AlgorithmTool {
 				System.out.println("qt hr   = "+pbit0.getQtinterval()*5);
 				/*心律失常分析*/
 				ARRH_TYPE rhythmClass = RhythmchkNew.RhythmChk_New(pBeatInfo, deviceid ,index);			// Check the rhythm.分析PVC
-				ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 				if(rhythmClass != ARRH_TYPE.NORMAL){
+					ArrhythmiaInfo pArrhythmia =  new ArrhythmiaInfo();
 					pArrhythmia.setArrhythmiaType(rhythmClass);
 					pArrhythmia.setnStartTime(pBeatInfo[BEAT_SUM-1].getT0());
 					pArrhythmia.setnEndTime(pBeatInfo[BEAT_SUM-1].getT0() + pBeatInfo[BEAT_SUM-1].getWidth()*5);
 					BeatInfoTemp.setArrhythmia(pArrhythmia);
 					return 1;
-				}else{
-					pArrhythmia.setArrhythmiaType(ARRH_TYPE.NORMAL);
-					BeatInfoTemp.setArrhythmia(pArrhythmia);
 				}
 			}
 		}
@@ -307,6 +304,7 @@ public class AlgorithmTool {
 	 *@return BeatInfo
 	 */
 	public static BeatInfo beatAnalysis(InputWave pEcgSample, String deviceid, int index) {
+		//System.out.println("+++input==========================="+pEcgSample.getT0());
 		CacheMap cacheMap = CacheMap.getCacheMap();
 		String prefix = cacheMap.getPrefix(deviceid, index, "beatAnalysis");
 		Wave orignalSignal = cacheMap.getObject(prefix + "orignalSignal", Wave.class);

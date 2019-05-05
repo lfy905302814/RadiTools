@@ -14,8 +14,8 @@ public class Test3{
 	public static void main(String[] args) {
 		//File file = new File("D:\\20180405.hst");
 		//File file = new File("D:\\20180408.hst");
-		//File file = new File("D:\\20180409.hst");
-		File file = new File("D:\\20180410.hst");
+		File file = new File("D:\\20180409.hst");
+		//File file = new File("D:\\20180410.hst");
 		FileInputStream in1 = null;
 		DataInputStream data_in = null;
 		try {
